@@ -10,7 +10,6 @@ Module.register("digitransit",{
 		stops: [
 			"HSL:2331207",
 			"HSL:2332207",
-			//"HSL:2111552"
 			],
 	},
 	getStyles: function() {
@@ -33,12 +32,38 @@ Module.register("digitransit",{
 	},
 	updateStopData: function () {
 		var self = this;
+		var walttiZones = [
+			"FOLI",
+			"Hameenlinna",
+			"IisalmiEly",
+			"JoensuuEly",
+			"Kajaani",
+			"Kotka",
+			"Kouvola",
+			"Lahti",
+			"Lappeenranta",
+			"LINKKI",
+			"MikkeliEly",
+			"OULU",
+			"PohjoisPohjanmaanEly",
+		];
 		var temp = [];
 		for (var curStop = 0; curStop < self.config.stops.length; curStop++) {
 			(function (curStop) {
+			var zone = self.config.stops[curStop].split(":")[0];
+			if (walttiZones.includes(zone)) {
+				zone = "waltti";
+			}
+			else if (zone == "HSL"){
+				zone = "hsl";
+			}
+			else {
+				Log.warning("Invalid zone specified for stop " + curStop + ": " + zone);
+				return;
+			}
 			var xhr = new XMLHttpRequest();
 			xhr.responseType = 'json';
-			xhr.open("POST", "https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql");
+			xhr.open("POST", "https://api.digitransit.fi/routing/v1/routers/" + zone + "/index/graphql");
 			xhr.setRequestHeader("Content-Type", "application/json");
 			xhr.setRequestHeader("Accept", "application/json");
 			xhr.addEventListener("load", function () {

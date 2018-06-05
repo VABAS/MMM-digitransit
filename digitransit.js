@@ -7,6 +7,7 @@ Module.register("digitransit",{
 		routeNameLength: 20,
 		realTimeSign: " ",
 		scheduledSign: "~",
+		width: 500,
 		stops: [
 			"HSL:2331207",
 			"HSL:2332207",
@@ -118,7 +119,7 @@ Module.register("digitransit",{
 		wrapper.innerHTML = data.name + " <sup>(" + data.gtfsId + ")</sup>";
 		var stopTimeArray = data.stopTimeArray;
 		var table = document.createElement("table");
-		table.setAttribute("style", "width:500px;");
+		table.setAttribute("style", "width:" + self.config.width + "px;");
 		var tr = document.createElement("tr");
 		var timeth = document.createElement("th");
 		timeth.appendChild(document.createTextNode("Aika"));

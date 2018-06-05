@@ -19,6 +19,7 @@ Module.register("digitransit",{
 	},
 	start: function () {
 		this.stopNum = 0;
+		this.stopPhase = 0;
 		this.stopData = [];
 		this.updateStopData();
 		// Schedule update timers.
@@ -80,7 +81,7 @@ Module.register("digitransit",{
 					stopData.stopTimeArray.push([
 						stopTimes[i].realtimeDeparture - (2 * 3600),
 						stopTimes[i].trip.route.shortName,
-						stopTimes[i].headsign.split(" via ")[0],
+						stopTimes[i].headsign.split(" via "),
 						stopTimes[i].realtime,
 						stopTimes[i].scheduledDeparture
 					]);
@@ -166,10 +167,14 @@ Module.register("digitransit",{
 			var routetd = document.createElement("td");
 			routetd.appendChild(document.createTextNode(stopTimeArray[s][1]));
 			var desttd = document.createElement("td");
-			if (stopTimeArray[s][2].length > self.config.routeNameLength) {
-				stopTimeArray[s][2] = stopTimeArray[s][2].slice(0, self.config.routeNameLength) + "...";
+			var destSign = stopTimeArray[s][2][0];
+			if (stopTimeArray[s][2].length >= 2 && self.stopPhase == 1) {
+				destSign = "via " + stopTimeArray[s][2][1];
 			}
-			desttd.appendChild(document.createTextNode(stopTimeArray[s][2]));
+			if (destSign.length > self.config.routeNameLength) {
+				destSign = destSign.slice(0, self.config.routeNameLength) + "...";
+			}
+			desttd.appendChild(document.createTextNode(destSign));
 			tr.appendChild(rttd);
 			tr.appendChild(timetd);
 			tr.appendChild(routetd);
@@ -177,7 +182,13 @@ Module.register("digitransit",{
 			table.appendChild(tr);
 		}
 		wrapper.appendChild(table);
-		self.stopNum = (self.stopNum + 1) % self.stopData.length;
+		if (self.stopPhase >= 1) {
+			self.stopNum = (self.stopNum + 1) % self.stopData.length;
+			self.stopPhase = 0;
+		}
+		else {
+			self.stopPhase++;
+		}
 		return wrapper;
 	}
 });
